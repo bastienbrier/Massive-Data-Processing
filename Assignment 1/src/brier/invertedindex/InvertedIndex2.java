@@ -121,14 +121,17 @@ public class InvertedIndex2 extends Configured implements Tool {
     	 final_file = final_file.substring(0, final_file.length()-1); // delete the final comma
 
 		 if(hash.size() == 1){
-			 context.getCounter(CustomCounter.UniqueWords).increment(1);
-		 }
-		 Long final_count = new Long(5);
-		 final_count = context.getCounter(CustomCounter.UniqueWords).getValue();
-		 String final_string = String.valueOf(final_count);
-		 if (final_count == 36268){
-			 context.write(new Text("CustomCounter.UniqueWords ="), new Text(final_string));
+			 context.getCounter(CustomCounter.UniqueWords).increment(1); // increment the counter by one
 		 }
       }
+	
+	/** Cleanup - takes places at the end of the Reducer **/
+	protected void cleanup(Context context)
+	  		throws IOException, InterruptedException{
+		  Long final_count = new Long(5); // initiate a long type to store the counter value
+		  final_count = context.getCounter(CustomCounter.UniqueWords).getValue(); // create the value of the counter
+		  String final_string = String.valueOf(final_count); // convert it to a string
+		  context.write(new Text("CustomCounter.UniqueWords ="), new Text(final_string));
+	  }
    }
 }
